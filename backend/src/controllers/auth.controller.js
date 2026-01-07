@@ -65,7 +65,7 @@ export async function login(req,res){
     
     // Basic validation
     if (!email || !password) {
-        return res.status(400).json({ message: "Email, username and password are required" });
+        return res.status(400).json({ message: "Email and password are required" });
     }
     if (password.length < 6) {
         return res.status(400).json({ message: "Password must be at least 6 characters" });
@@ -74,12 +74,12 @@ export async function login(req,res){
     try{
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ message: "User doesnt exist" });
+            return res.status(400).json({ message: "User does not exist" });
         }
 
-        const passwordCorrect = bcrypt.compare(password,user.password)
-        if(!passwordCorrect){
-            return res.status(401).json({ message: "wrong password" });
+        const passwordCorrect = await bcrypt.compare(password, user.password);
+        if (!passwordCorrect) {
+            return res.status(401).json({ message: "Wrong password" });
         }
 
         generateToken(user._id, res);
@@ -90,8 +90,8 @@ export async function login(req,res){
             username: user.username,
             profilePic: user.profilePic,
         });
-    }catch(err){
-        console.log("error in loign controller: ",err.message)
+    } catch (err) {
+        console.log("error in login controller: ", err.message);
         return res.status(500).json({ message: "Internal server error" });
     }
 };

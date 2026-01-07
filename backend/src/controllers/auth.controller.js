@@ -61,8 +61,39 @@ export async function signup(req, res) {
 };
 
 export async function login(req,res){
-    res.send("login");
+    const {email,password} = req.body;
     
+    // Basic validation
+    if (!email || !password) {
+        return res.status(400).json({ message: "Email, username and password are required" });
+    }
+    if (password.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
+    try{
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: "User doesnt exist" });
+        }
+
+        const passwordCorrect = bcrypt.compare(password,user.password)
+        if(!passwordCorrect){
+            return res.status(401).json({ message: "wrong password" });
+        }
+
+        generateToken(user._id, res);
+
+        res.status(200).json({
+            _id: user._id,
+            email: user.email,
+            username: user.username,
+            profilePic: user.profilePic,
+        });
+    }catch(err){
+        console.log("error in loign controller: ",err.message)
+        return res.status(500).json({ message: "Internal server error" });
+    }
 };
 
 export async function logout(req,res){

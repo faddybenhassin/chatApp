@@ -115,3 +115,13 @@ export async function logout(req, res) {
 export async function updateProfile(req, res){
     
 }
+
+
+export async function checkAuth(req, res){
+    try {
+        res.status(200).json(req.user)
+    } catch (err) {
+        console.log("error in checkAuth controller: ", err.message);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}

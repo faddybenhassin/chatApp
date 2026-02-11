@@ -11,7 +11,7 @@ import { sendMessage } from '../../util/services'
 
 
 function App() {
-  const { token, logout } = useAuth()
+  const { token, logout, user } = useAuth()
   const navigate = useNavigate()
 
 
@@ -26,8 +26,20 @@ function App() {
     navigate("/login")
   }
 
-  const [ otherUserId, setOtherId] = useState("")
+  const [otherUserId, setOtherId] = useState("")
   const [text, setText] = useState("")
+
+  const handleSend = async () => {
+    const trimmed = text.trim()
+    if (!trimmed || !otherUserId) return
+
+    try {
+      await sendMessage(token, otherUserId, trimmed)
+      setText("")
+    } catch (error) {
+      console.error("Failed to send message:", error)
+    }
+  }
 
   if (!token) {
     return null 
@@ -35,28 +47,51 @@ function App() {
 
 
   return (
-    <div className="AppContainer">
-      <button className='logout' onClick={handleLogout}>logout</button>
-      <Sidebar setOtherId={setOtherId}/>
-      <Messages otherUserId={otherUserId}/>
-      <div className="userInput">
-        <input 
-          type="text" 
-          value={text}
-          onChange={(e)=>{
-            setText(e.target.value)
-          }}
-          onKeyDown={async (event) => {
-                if (event.key == "Enter") {
-                  try {
-                    await sendMessage(token, otherUserId, text); 
-                    setText("");
-                  } catch (error) {
-                    console.error("Failed to send message:", error);
-                  }
+    <div className="AppWrapper">
+      <header className="AppHeader">
+        <div className="AppTitle">
+          <span className="AppTitle-main">ChatApp</span>
+          <span className="AppTitle-sub">Simple real‑time messaging</span>
+        </div>
+        <div className="AppHeader-right">
+          {user?.username && (
+            <span className="AppHeader-user">Signed in as <strong>{user.username}</strong></span>
+          )}
+          <button className="logout" onClick={handleLogout}>Logout</button>
+        </div>
+      </header>
+
+      <div className="AppContainer">
+        <Sidebar setOtherId={setOtherId} selectedUserId={otherUserId} />
+
+        <div className="ChatArea">
+          <Messages otherUserId={otherUserId} />
+
+          <div className="userInput">
+            <input
+              type="text"
+              value={text}
+              placeholder={otherUserId ? "Type a message…" : "Select a user to start chatting"}
+              disabled={!otherUserId}
+              onChange={(e) => {
+                setText(e.target.value)
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault()
+                  handleSend()
                 }
               }}
-        />
+            />
+            <button
+              className="sendBtn"
+              onClick={handleSend}
+              disabled={!otherUserId || !text.trim()}
+            >
+              Send
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )

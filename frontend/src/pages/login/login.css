@@ -1,0 +1,35 @@
+.loginContainer {
+  margin: 60px auto;
+  max-width: 520px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--glass-border);
+}
+
+.loginContainer h2 { font-size: 22px; color: white; margin-bottom: 4px; }
+
+.username, .pwd { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+
+.forgetPwd { text-align: right; margin-top: -8px; }
+.forgetPwd a { color: var(--text-muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+.forgetPwd a:hover { color: var(--accent); }
+
+.btnContainer { display: flex; gap: 12px; justify-content: center; }
+
+.btnContainer .register { 
+  background: transparent; 
+  color: var(--text-muted); 
+  border: 1px solid var(--glass-border); 
+}
+
+.btnContainer .register:hover { 
+  background: var(--glass); 
+  color: white; 
+  border-color: rgba(255,255,255,0.2);
+}

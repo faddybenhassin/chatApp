@@ -1,0 +1,33 @@
+.registerContainer {
+  margin: 60px auto;
+  max-width: 520px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--glass-border);
+}
+
+.registerContainer h2 { font-size: 22px; color: white; margin-bottom: 4px; }
+
+.username, .email, .pwd { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px; 
+}
+
+.username label, .email label, .pwd label {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.btnContainer { 
+  display: flex; 
+  gap: 12px; 
+  justify-content: center; 
+  margin-top: 10px;
+}

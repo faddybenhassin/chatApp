@@ -1,0 +1,105 @@
+
+
+
+.messageContainer{
+    margin-bottom: 15px;
+}
+
+.messageContainer .other{
+    color: red;
+} 
+.messageContainer .you{
+    color: blue;
+} 
+
+.AppContainer{
+    max-width: 700px;
+    min-width: 550px;
+    /* width: 100%; */
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1.5fr 2.5fr;
+    grid-template-rows: 1fr auto;
+    background: linear-gradient(135deg, #0a0e27, #1a1233);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(108, 92, 231, 0.1);
+    box-sizing: border-box;
+}
+
+
+.logout{
+    position:absolute;
+    top:5px;
+    right: 5px;
+}
+
+.Sidebar{
+    grid-column: 1;
+    grid-row: 1 / 3;
+    background: rgba(0, 0, 0, 0.3);
+    border-right: 1px solid var(--glass-border);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.usersContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+}
+
+.user{
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background-color: #1a1233;
+}
+.profile{
+    margin-top: auto;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background-color: #1a1233;
+}
+
+.messagesContainer{
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    overflow-y: auto;
+    background: linear-gradient(135deg, rgba(7, 16, 37, 0.5), rgba(26, 18, 51, 0.5));
+    padding: 12px;
+}
+
+
+.userInput{
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    align-items: stretch;
+    padding: 12px;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid var(--glass-border);
+}
+.userInput input{
+    width: 100%;
+    height: 100%;
+    padding: 10px 12px;
+    font-size: 16px;
+    box-sizing: border-box;
+    background: var(--glass);
+    color: var(--text-main);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.userInput input:focus{
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.userInput input::placeholder{
+    color: var(--text-muted);
+}

@@ -21,6 +21,7 @@ export const sendMessage = async (req, res) => {
     })
 
     res.status(201).json(newMessage)
+    req.io.emit("send-message",{msg : newMessage})
   } catch (error) {
     res.status(500).json({ message: 'Error sending message', error: error.message })
   }

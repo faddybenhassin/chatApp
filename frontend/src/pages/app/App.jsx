@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../../util/authContext'
 import { useNavigate } from "react-router-dom";
 import { sendMessage } from '../../util/services'
-
+import { socket } from '../../util/socket'
 
 
 
@@ -13,7 +13,28 @@ import { sendMessage } from '../../util/services'
 function App() {
   const { token, logout, user } = useAuth()
   const navigate = useNavigate()
+  const [isConnected, setIsConnected] = useState(socket.connected);
 
+  useEffect(() => {
+    function onConnect() {
+      setIsConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    socket.connect();
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+
+    return () => {
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (!token) {

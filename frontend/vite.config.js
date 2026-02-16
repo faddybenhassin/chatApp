@@ -14,7 +14,7 @@ export default defineConfig({
     //   proxy: {
     //   // Any request starting with /api will be sent to the backend
     //   '/api': {
-    //     target: "http://http://192.168.1.20:3000",
+    //     target: "http://192.168.1.20:3000",
     //     changeOrigin: true,
     //   }
     // }

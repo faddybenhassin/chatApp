@@ -1,6 +1,8 @@
 import { fetchMessages } from '../util/services'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../util/authContext'
+import { socket } from '../util/socket'
+
 
 function Message({ name, text, isOwn }) {
   return (
@@ -16,6 +18,18 @@ function Message({ name, text, isOwn }) {
 export function Messages({ otherUserId }) {
   const { token, user } = useAuth()
   const [messages, setMessages] = useState([])
+  useEffect(() => {
+    socket.on("new-message", ({ msg }) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    return () => {
+      socket.off('new-message');
+    };
+  }, []);
+
+
+
 
   useEffect(() => {
     if (!token) return

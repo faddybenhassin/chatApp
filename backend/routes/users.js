@@ -7,6 +7,6 @@ router.use(verifyToken)
 
 router.get('/', getUsers)
 
-router.get('/:id', getUser)
+router.get('/:userId', getUser)
 
 export default router

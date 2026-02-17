@@ -21,7 +21,10 @@ export const sendMessage = async (req, res) => {
     })
 
     res.status(201).json(newMessage)
-    req.io.emit("new-message",{msg : newMessage})
+    // Conversation room: same format as client — sorted sender_receiver
+    const roomId = [String(newMessage.sender), String(newMessage.receiver)].sort().join('_')
+    req.io.to(roomId).emit('new-message', { msg: newMessage })
+    req.io.to(String(newMessage.receiver)).emit('new-message-notification', { msg: newMessage })
   } catch (error) {
     res.status(500).json({ message: 'Error sending message', error: error.message })
   }

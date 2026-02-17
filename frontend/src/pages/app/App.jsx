@@ -1,10 +1,10 @@
 import './app.css'
 import { Messages } from '../../components/messages'
 import { Sidebar } from '../../components/sidebar'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../../util/authContext'
 import { useNavigate } from "react-router-dom";
-import { sendMessage } from '../../util/services'
+import { sendMessage, fetchUser } from '../../util/services'
 import { socket } from '../../util/socket'
 
 
@@ -14,27 +14,48 @@ function App() {
   const { token, logout, user } = useAuth()
   const navigate = useNavigate()
   const [isConnected, setIsConnected] = useState(socket.connected);
+  const [otherUserId, setOtherId] = useState("")
+  const [text, setText] = useState("")
+
+
+  const otherUserIdRef = useRef(otherUserId);
+
+  useEffect(() => {
+    otherUserIdRef.current = otherUserId;
+  }, [otherUserId]);
 
   useEffect(() => {
     function onConnect() {
-      setIsConnected(true);
+      setIsConnected(true)
+      if (user?._id) socket.emit('join_room', user._id)
     }
 
     function onDisconnect() {
-      setIsConnected(false);
+      setIsConnected(false)
     }
 
-    socket.connect();
+    async function onMessageNotification({ msg }){
+      const user = await fetchUser(token, String(msg.sender))
+      console.log(otherUserIdRef.current)
+      if(user && msg.sender !== otherUserIdRef.current){
+        alert(`new message from ${user.username}: ${msg.content}`)
+      }
+    }
 
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
+    socket.connect()
+    socket.on('connect', onConnect)
+    socket.on('disconnect', onDisconnect)
+    socket.on('new-message-notification', onMessageNotification)
+    if (socket.connected && user?._id) socket.emit('join_room', user._id)
+
 
     return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      socket.disconnect();
-    };
-  }, []);
+      if (user?._id) socket.emit('leave_room', user._id)
+      socket.off('connect', onConnect)
+      socket.off('disconnect', onDisconnect)
+      socket.disconnect()
+    }
+  }, [user?._id,otherUserId])
 
   useEffect(() => {
     if (!token) {
@@ -47,8 +68,6 @@ function App() {
     navigate("/login")
   }
 
-  const [otherUserId, setOtherId] = useState("")
-  const [text, setText] = useState("")
 
   const handleSend = async () => {
     const trimmed = text.trim()
@@ -83,7 +102,7 @@ function App() {
       </header>
 
       <div className="AppContainer">
-        <Sidebar setOtherId={setOtherId} selectedUserId={otherUserId} />
+        <Sidebar otherUserId={otherUserId} setOtherId={setOtherId} />
 
         <div className="ChatArea">
           <Messages otherUserId={otherUserId} />

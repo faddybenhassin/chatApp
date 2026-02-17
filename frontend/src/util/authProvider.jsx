@@ -6,7 +6,7 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null)
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
-
+  
 
 
   async function verifyToken() {

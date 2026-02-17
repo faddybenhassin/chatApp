@@ -1,9 +1,28 @@
 import { useEffect, useState } from "react"
 import { fetchUsers } from "../util/services"
 import { useAuth } from '../util/authContext'
+import { socket } from "../util/socket"
 
-const Users = ({ token, currentUser, selectedUserId, setOtherId }) => {
+
+const Users = ({ token, currentUser, otherUserId, setOtherId }) => {
   const [users, setUsers] = useState([])
+  
+
+
+  useEffect(() => {
+    if (!otherUserId || !currentUser?._id) return;
+
+    const roomId = [otherUserId, currentUser._id].sort().join("_");
+
+    console.log("Joining room:", roomId);
+    socket.emit("join_room", roomId);
+
+    return () => {
+      console.log("Leaving room:", roomId);
+      socket.emit("leave_room", roomId);
+    };
+  }, [otherUserId, currentUser?._id]);
+
 
   useEffect(() => {
     if (!token) return
@@ -17,7 +36,7 @@ const Users = ({ token, currentUser, selectedUserId, setOtherId }) => {
         .map((u) => (
           <button
             type="button"
-            className={`user ${u._id === selectedUserId ? 'user--active' : ''}`}
+            className={`user ${u._id === otherUserId ? 'user--active' : ''}`}
             key={u._id}
             onClick={() => {
               setOtherId(u._id)
@@ -31,7 +50,7 @@ const Users = ({ token, currentUser, selectedUserId, setOtherId }) => {
   )
 }
 
-export function Sidebar({ setOtherId, selectedUserId }) {
+export function Sidebar({ setOtherId, otherUserId }) {
   const { token, user: currentUser } = useAuth()
 
   return (
@@ -43,7 +62,7 @@ export function Sidebar({ setOtherId, selectedUserId }) {
 
       <Users
         setOtherId={setOtherId}
-        selectedUserId={selectedUserId}
+        otherUserId={otherUserId}
         token={token}
         currentUser={currentUser}
       />

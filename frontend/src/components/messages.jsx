@@ -18,15 +18,24 @@ function Message({ name, text, isOwn }) {
 export function Messages({ otherUserId }) {
   const { token, user } = useAuth()
   const [messages, setMessages] = useState([])
-  useEffect(() => {
-    socket.on("new-message", ({ msg }) => {
-      setMessages((prev) => [...prev, msg]);
-    });
 
+  useEffect(() => {
+    function onNewMessage({ msg }) {
+      if (!msg || !user?._id || !otherUserId) return
+      const s = String(msg.sender)
+      const r = String(msg.receiver)
+      const me = String(user._id)
+      const other = String(otherUserId)
+      const forThisConversation = (s === me && r === other) || (r === me && s === other)
+      if (forThisConversation) {
+        setMessages((prev) => [...prev, msg])
+      }
+    }
+    socket.on('new-message', onNewMessage)
     return () => {
-      socket.off('new-message');
-    };
-  }, []);
+      socket.off('new-message', onNewMessage)
+    }
+  }, [otherUserId, user?._id])
 
 
 
@@ -54,9 +63,9 @@ export function Messages({ otherUserId }) {
         messages.map((msg) => (
           <Message
             key={msg._id}
-            name={msg.sender === user._id ? 'You' : 'Stranger'}
+            name={String(msg.sender) === String(user._id) ? 'You' : 'Stranger'}
             text={msg.content}
-            isOwn={msg.sender === user._id}
+            isOwn={String(msg.sender) === String(user._id)}
           />
         ))
       )}

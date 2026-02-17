@@ -57,6 +57,31 @@ export async function fetchUsers(token, setUsers){
   }
 }
 
+export async function fetchUser(token, userId){
+  if (!token || !userId) {
+    return null
+  }
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${userId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!res.ok) throw new Error('fetch request failed')
+
+    const user = await res.json()
+
+    return user
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
 
 export async function sendMessage(token, receiver, content){
   if (!token || !receiver || !content.trim()) {

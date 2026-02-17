@@ -39,9 +39,22 @@ io.on('connection', (socket) => {
     console.log('User disconnected:', socket.id);
   });
 
-  socket.onAny((eventName, ...args) => {
-    console.log(`Event Received: ${eventName}`, args);
+  socket.on("join_room", (roomId) => {
+    socket.join(roomId);
+    console.log(`User ${socket.id} joined room: ${roomId}`);
   });
+
+  socket.on("leave_room", (roomId) => {
+    socket.leave(roomId);
+    console.log(`User ${socket.id} left room: ${roomId}`);
+
+    // Optional: Tell others in the room that someone left
+    // socket.to(roomId).emit("user_left", { userId: socket.id });
+  });
+
+  // socket.onAny((eventName, ...args) => {
+  //   console.log(`Event Received: ${eventName}`, args);
+  // });
 
 
 });

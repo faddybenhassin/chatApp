@@ -22,11 +22,9 @@ export function Messages({ otherUserId }) {
   useEffect(() => {
     function onNewMessage({ msg }) {
       if (!msg || !user?._id || !otherUserId) return
-      const s = String(msg.sender)
-      const r = String(msg.receiver)
-      const me = String(user._id)
-      const other = String(otherUserId)
-      const forThisConversation = (s === me && r === other) || (r === me && s === other)
+      const forThisConversation =
+        (msg.sender === user._id && msg.receiver === otherUserId) ||
+        (msg.receiver === user._id && msg.sender === otherUserId)
       if (forThisConversation) {
         setMessages((prev) => [...prev, msg])
       }
@@ -63,9 +61,9 @@ export function Messages({ otherUserId }) {
         messages.map((msg) => (
           <Message
             key={msg._id}
-            name={String(msg.sender) === String(user._id) ? 'You' : 'Stranger'}
+            name={msg.sender === user._id ? 'You' : 'Stranger'}
             text={msg.content}
-            isOwn={String(msg.sender) === String(user._id)}
+            isOwn={msg.sender === user._id}
           />
         ))
       )}

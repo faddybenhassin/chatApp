@@ -37,10 +37,10 @@ function Login() {
 
   return (
     <div className="loginContainer">
-      <div className="username">
+      <div className="email">
         <input
           type="text"
-          placeholder="username"
+          placeholder="email"
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>

@@ -2,9 +2,9 @@ import { useEffect, useState } from "react"
 import { fetchUsers } from "../util/services"
 import { useAuth } from '../util/authContext'
 import { socket } from "../util/socket"
+import { useNavigate } from "react-router-dom"
 
-
-const Users = ({ token, currentUser, otherUserId, setOtherId }) => {
+const Users = ({ token, currentUser, otherUserId, setOtherId, setSidebarOpen }) => {
   const [users, setUsers] = useState([])
   
 
@@ -40,6 +40,7 @@ const Users = ({ token, currentUser, otherUserId, setOtherId }) => {
             key={u._id}
             onClick={() => {
               setOtherId(u._id)
+              setSidebarOpen(false); // Add this function to close the sidebar when a user is selected on mobile
             }}
           >
             <span className="userAvatar">{u.username[0]?.toUpperCase()}</span>
@@ -50,8 +51,16 @@ const Users = ({ token, currentUser, otherUserId, setOtherId }) => {
   )
 }
 
-export function Sidebar({ setOtherId, otherUserId }) {
-  const { token, user: currentUser } = useAuth()
+export function Sidebar({ setOtherId, otherUserId, setSidebarOpen }) {
+  const { token, user: currentUser, logout } = useAuth()
+  const navigate = useNavigate()
+
+
+
+  const handleLogout = ()=>{
+    logout()
+    navigate("/login")
+  }
 
   return (
     <aside className="Sidebar">
@@ -65,6 +74,7 @@ export function Sidebar({ setOtherId, otherUserId }) {
         otherUserId={otherUserId}
         token={token}
         currentUser={currentUser}
+        setSidebarOpen={setSidebarOpen}
       />
 
       <div className="profile">
@@ -75,6 +85,8 @@ export function Sidebar({ setOtherId, otherUserId }) {
           <div className="profileName">{currentUser?.username || 'You'}</div>
           <div className="profileStatus">Online</div>
         </div>
+        <button className="logout" onClick={handleLogout}>Logout</button>
+
       </div>
     </aside>
   )

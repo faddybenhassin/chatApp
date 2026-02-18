@@ -9,56 +9,33 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  overflow: hidden;
 }
 
 .AppHeader {
-  display: flex;
+  display: none;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 10px 16px;
+  margin: 4px;
   border-radius: var(--radius);
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  /* box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); */
 }
 
-.AppTitle {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.AppTitle-main {
-  font-weight: 600;
-  letter-spacing: 0.03em;
-}
-
-.AppTitle-sub {
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.AppHeader-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.AppHeader-user strong {
-  color: var(--text-main);
-}
-
-.logout {
+.MenuToggle {
+  display: none; /* Hidden on desktop */
   background: transparent;
-  border: 1px solid var(--glass-border);
-  padding-inline: 14px;
+  border: none;
+  color: var(--text-main);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 0;
 }
 
-.logout:hover {
-  background: var(--glass);
-}
+
+
 
 .AppContainer {
   flex: 1;
@@ -68,9 +45,19 @@
   background: linear-gradient(135deg, #0a0e27, #1a1233);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  /* box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6); */
   box-sizing: border-box;
 }
+
+.otherUserData {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+
+
 
 .ChatArea {
   display: flex;
@@ -87,6 +74,9 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  transition: transform 0.3s ease, visibility 0.3s;
+  height: 100%; 
+  box-sizing: border-box;
 }
 
 .Sidebar-header h2 {
@@ -104,6 +94,18 @@
   flex-direction: column;
   gap: 6px;
   margin-top: 6px;
+
+  flex: 1;           
+  overflow-y: auto;  
+  min-height: 0;
+}
+
+.usersContainer::-webkit-scrollbar {
+  display: none;
+}
+.usersContainer {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .user {
@@ -155,6 +157,17 @@
   border: 1px solid var(--glass-border);
 }
 
+
+.logout {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  padding-inline: 14px;
+}
+
+.logout:hover {
+  background: var(--glass);
+}
 .profileAvatar {
   width: 32px;
   height: 32px;
@@ -190,8 +203,21 @@
   background: linear-gradient(135deg, rgba(7, 16, 37, 0.5), rgba(26, 18, 51, 0.5));
   padding: 14px 16px;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   gap: 8px;
+
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;
+}
+
+.messagesContainer.flex-reverse > :last-child {
+  margin-top: auto;
 }
 
 .messagesEmpty {
@@ -272,7 +298,7 @@
 .userInput input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  /* box-shadow: 0 0 0 3px var(--accent-glow); */
 }
 
 .userInput input::placeholder {
@@ -296,22 +322,194 @@
   transform: none;
 }
 
+
 @media (max-width: 768px) {
+  .MenuToggle {
+    display: block !important; /* Show on mobile */
+  }
+
+  .AppHeader{
+    display: flex;
+  }
   .AppWrapper {
-    gap: 8px;
+    gap: 0; /* Flush to edges on mobile */
+    max-width: 100%;
+    height: 100dvh;
   }
 
   .AppContainer {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto;
+    display: flex; /* Switch from grid to flex for easier height management */
+    flex-direction: column;
+    border-radius: 0;
+    height: 100%;
   }
 
   .Sidebar {
-    border-right: none;
-    border-bottom: 1px solid var(--glass-border);
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px; /* Fixed width for the "drawer" */
+    z-index: 1000;
+    background: #121429; /* Solid background so messages don't bleed through */
+    transition: transform 0.3s ease;
+    transform: translateX(-100%); /* Hidden by default */
+    /* box-shadow: 10px 0 30px rgba(0,0,0,0.5); */
+  }
+  .SidebarOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  /* When the sidebar is toggled open */
+  .AppContainer.sidebar-open .Sidebar {
+    transform: translateX(0);
   }
 
+  .AppContainer.sidebar-open .SidebarOverlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .ChatArea {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  
   .messageBubble {
     max-width: 85%;
   }
+
+  /* Optional: Add an overlay when sidebar is open */
+  .AppContainer.sidebar-open::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 90;
+  }
+}
+
+
+
+@media (max-height: 500px) and (orientation: landscape) {
+  /* 1. Remove the gap and max-width so it fills the screen */
+
+  #root{
+    padding: 0;
+    margin: 0;
+  }
+
+  .AppHeader{
+    display: flex;
+  }
+
+  .AppWrapper {
+    gap: 0;
+    max-width: 100%;
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  /* 2. Force the container to flex instead of grid */
+  .AppContainer {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0;
+    border: none;
+  }
+
+
+
+  /* 3. Hide the sidebar into the drawer (same as mobile portrait) */
+  .Sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 85vw; 
+    background: #121429; /* Solid background so messages don't bleed through */
+    max-width: 280px;
+    height: 100dvh;
+    transform: translateX(-100%);
+    z-index: 1000;
+  }
+
+  .SidebarOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .AppContainer.sidebar-open .Sidebar {
+    transform: translateX(0);
+  }
+
+  .AppContainer.sidebar-open .SidebarOverlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  /* 4. Show the Menu Toggle so users can actually open the sidebar */
+  .MenuToggle {
+    display: block !important;
+  }
+
+  /* 5. Shrink headers to save vertical space */
+  
+
+  /* 6. Ensure the message area is scrollable and fills space */
+  .ChatArea {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .messagesContainer {
+    padding: 8px;
+    /* Ensure the container doesn't collapse */
+    flex-grow: 1; 
+  }
+
+  /* 7. Slim down the input area */
+  .userInput {
+    padding: 6px 10px;
+  }
+
+  .userInput input {
+    padding: 6px 12px;
+  }
+}
+
+
+
+/* toast shit */
+
+/* Only targets toasts with the .chat-notification-toast class */
+.chat-notification-toast {
+  background: rgba(10, 14, 39, 0.9) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--text-main) !important;
+  border-radius: var(--radius) !important;
+}
+
+/* Specifically style the description within this toast type */
+.chat-notification-toast [data-description] {
+  color: var(--text-muted) !important;
+}
+
+/* Specifically style the action button within this toast type */
+.chat-notification-toast [data-button] {
+  background: var(--accent) !important;
+  color: #fff !important;
 }

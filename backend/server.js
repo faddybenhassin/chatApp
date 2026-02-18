@@ -8,6 +8,10 @@ import authRouter from './routes/auth.js'
 import connectDB from './config/db.js'
 import cors from 'cors'
 
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express()
 const httpServer = createServer(app)
 
@@ -31,6 +35,17 @@ connectDB()
 app.use('/api/users', userRouter)
 app.use('/api/message', messageRouter)
 app.use('/api/auth', authRouter)
+
+const distPath = path.join(__dirname, '../frontend/dist'); 
+
+// 1. Serve static files from Vite's dist folder
+app.use(express.static(distPath));
+
+// 2. Catch-all: Route all other requests to index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
 
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);

@@ -1,5 +1,5 @@
 import { fetchMessages } from '../util/services'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../util/authContext'
 import { socket } from '../util/socket'
 
@@ -18,6 +18,19 @@ function Message({ name, text, isOwn }) {
 export function Messages({ otherUserId }) {
   const { token, user } = useAuth()
   const [messages, setMessages] = useState([])
+  const scrollRef = useRef(null)
+
+  const scrollToNewest = () => {
+    scrollRef.current?.scrollTo({ 
+      top: 0,
+      behavior: "smooth"
+    })
+  }
+
+  // 3. Scroll whenever the messages array changes
+  useEffect(() => {
+    scrollToNewest()
+  }, [messages])
 
   useEffect(() => {
     function onNewMessage({ msg }) {
@@ -52,13 +65,16 @@ export function Messages({ otherUserId }) {
   }
 
   return (
-    <div className="messagesContainer">
+    <div 
+      className="messagesContainer"
+      ref={scrollRef}
+      >
       {messages.length === 0 ? (
         <div className="messagesEmpty">
           <p>No messages yet. Say hi!</p>
         </div>
       ) : (
-        messages.map((msg) => (
+        [...messages].reverse().map((msg) => (
           <Message
             key={msg._id}
             name={msg.sender === user._id ? 'You' : 'Stranger'}

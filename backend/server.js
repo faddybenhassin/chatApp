@@ -7,7 +7,8 @@ import messageRouter from './routes/message.js'
 import authRouter from './routes/auth.js'
 import connectDB from './config/db.js'
 import cors from 'cors'
-
+import { fileURLToPath } from 'url'
+import path from 'path'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -42,9 +43,9 @@ const distPath = path.join(__dirname, '../frontend/dist');
 app.use(express.static(distPath));
 
 // 2. Catch-all: Route all other requests to index.html
-app.get('*', (req, res) => {
-  res.sendFile(path.join(distPath, 'index.html'));
-});
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(distPath, 'index.html'));
+// });
 
 
 io.on('connection', (socket) => {
@@ -74,6 +75,6 @@ io.on('connection', (socket) => {
 
 });
 
-httpServer.listen(PORT,'0.0.0.0', () => {
+httpServer.listen(PORT, () => {
   console.info(`Server is running on http://localhost:${PORT}`)
 })
